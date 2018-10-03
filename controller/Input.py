@@ -29,6 +29,7 @@ class Input(Logger):
         self.last_update = event.timestamp
 
     def set_last_report_(self, report):
+        # Deepcopy is needed in case of vector (list of two elements)
         self.last_report_ = deepcopy(report)
         return report
 
