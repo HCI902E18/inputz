@@ -16,10 +16,13 @@ class Controller(Logger):
 
         self.invokations = []
 
+        # Report 10 times a second
+        self.rate = 0.1
+
     def __reporter(self):
         while not self.kill:
             self.invoke()
-            sleep(0.1)
+            sleep(self.rate)
 
     def start(self):
         self.reporter_thread.start()
