@@ -1,3 +1,6 @@
+from threading import Thread
+from time import sleep
+
 from inputs import get_gamepad
 
 from .keys.Bumper import Bumper
@@ -23,18 +26,39 @@ class Controller(object):
         self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y')
 
         self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y')
+        self.LEFT_STICK_BUTTON = Button('BTN_THUMBL')
         self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY')
+        self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')
 
         self.RIGHT_BUMPER = Bumper('ABS_RZ')
         self.LEFT_BUMPER = Bumper('ABS_Z')
 
-    def start(self):
-        while 1:
-            for event in get_gamepad():
-                self.parse(event.ev_type, event.code, event.state)
+        self.kill = False
+        self.reporter_thread = Thread(target=self.reporter, args=(self,))
+        self.event_listener_thread = Thread(target=self.event_listener, args=(self,))
 
-    def parse(self, _, code_, state_):
+    @staticmethod
+    def reporter(self):
+        while not self.kill:
+            sleep(0.1)
+
+    @staticmethod
+    def event_listener(self):
+        while not self.kill:
+            for event in get_gamepad():
+                self.parse(event)
+
+    def start(self):
+        self.reporter_thread.start()
+        self.event_listener_thread.start()
+
+    def term(self):
+        self.kill = True
+        self.reporter_thread.join()
+        self.event_listener_thread.join()
+
+    def parse(self, event):
         for k, v in self.__dict__.items():
             if isinstance(v, Input):
-                if v.validate(code_):
-                    print(k, code_, state_)
+                if v.validate(event):
+                    print(k, v.parse(event))

@@ -6,9 +6,11 @@ class Bumper(Input):
         self.event_ = event
         self.interval = [0, 255]
 
-    def validate(self, code_):
-        return code_ == self.event_
+    def validate(self, event):
+        # event.ev_type, event.code, event.state
+        return event.code == self.event_
 
-    def parse(self, state_):
-        print(f'{self.name}!')
-        return
+    def parse(self, event):
+        _, _, state_ = super().parse(event)
+
+        return self.name, state_
