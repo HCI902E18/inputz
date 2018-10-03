@@ -81,10 +81,10 @@ class XboxController(Controller):
                 if input_.validate(event):
                     input_.parse(event)
 
-    def kage(self, value):
-        if value and not self.vibrating:
-            self.vibrating = True
-            self.device.set_vibration(1, 1)
-        elif not value:
-            self.vibrating = False
-            self.device.set_vibration(0, 0)
+    def vibrate(self, value):
+        val = value
+
+        self.device.set_vibration(
+            val,
+            val
+        )
