@@ -1,2 +1,2 @@
-inputs
-keyboard
+inputs==0.4
+keyboard==0.13.2

@@ -6,6 +6,13 @@ d = Devices()
 
 device = d.get_device()
 
+
+@device.listen('A', 'B')
+def kage():
+    print("KAGE!")
+    return
+
+
 if __name__ == "__main__":
     device.start()
 
