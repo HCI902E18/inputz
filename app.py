@@ -1,15 +1,21 @@
-"""Simple example showing how to get gamepad events."""
-import keyboard as keyboard
+import keyboard as keybard
 
-from controller.Controller import Controller
+from controller.Devices import Devices
 
-c = Controller()
+
+def main():
+    d = Devices()
+
+    device = d.get_device()
+
+    return device
+
 
 if __name__ == "__main__":
-    c.start()
+    k = main()
 
     while True:
-        if keyboard.is_pressed('Esc'):
+        if keybard.is_pressed('Esc'):
             print("WE ARE EXITING NOW!")
-            c.term()
+            k.term()
             exit(0)

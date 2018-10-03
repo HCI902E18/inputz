@@ -1,7 +1,9 @@
 from inputs import InputEvent
 
+from .logging import Logger
 
-class Input(object):
+
+class Input(Logger):
     @property
     def name(self):
         return self.__class__.__name__.upper()

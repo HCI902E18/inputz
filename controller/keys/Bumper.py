@@ -1,4 +1,4 @@
-from .Input import Input
+from controller.Input import Input
 
 
 class Bumper(Input):
