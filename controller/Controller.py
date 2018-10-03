@@ -31,10 +31,11 @@ class Controller(Logger):
     def invoke(self):
         for key, input_ in self.__dict__.items():
             if isinstance(input_, Input):
-                if input_.invoke():
+                input_value = input_.invoke()
+                if input_value:
                     for event in self.event_listeners:
                         if event['key'] == key:
-                            event['func']()
+                            event['func'](input_value)
 
     def listen(self, *keys):
         def decorator(func):

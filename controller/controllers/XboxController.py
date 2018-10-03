@@ -1,5 +1,7 @@
 from threading import Thread
 
+import keyboard as keybard
+
 from controller.Controller import Controller
 from controller.Input import Input
 from controller.keys.Bumper import Bumper
@@ -59,6 +61,12 @@ class XboxController(Controller):
         super().start()
 
         self.event_listener_thread.start()
+
+        while True:
+            if keybard.is_pressed('Esc'):
+                print("WE ARE EXITING NOW!")
+                self.term()
+                exit(0)
 
     def term(self):
         super().term()
