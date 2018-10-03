@@ -3,6 +3,7 @@ from threading import Thread
 from time import sleep
 
 from .Input import Input
+from .Invokation import Invokation
 from .logging import Logger
 
 
@@ -13,7 +14,7 @@ class Controller(Logger):
         self.kill = False
         self.reporter_thread = Thread(target=self.__reporter, args=())
 
-        self.event_listeners = []
+        self.invokations = []
 
     def __reporter(self):
         while not self.kill:
@@ -33,9 +34,9 @@ class Controller(Logger):
             if isinstance(input_, Input):
                 input_value = input_.invoke()
                 if input_value:
-                    for event in self.event_listeners:
-                        if event['key'] == key:
-                            event['func'](input_value)
+                    for invocation in self.invokations:
+                        if invocation.is_(key):
+                            invocation.invoke(input_value)
 
     def listen(self, *keys):
         def decorator(func):
@@ -57,7 +58,4 @@ class Controller(Logger):
         return decorated_function
 
     def __bind(self, key, func):
-        self.event_listeners.append({
-            'key': key,
-            'func': func
-        })
+        self.invokations.append(Invokation(key, func))
