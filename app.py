@@ -2,20 +2,15 @@ import keyboard as keybard
 
 from controller.Devices import Devices
 
+d = Devices()
 
-def main():
-    d = Devices()
-
-    device = d.get_device()
-
-    return device
-
+device = d.get_device()
 
 if __name__ == "__main__":
-    k = main()
+    device.start()
 
     while True:
         if keybard.is_pressed('Esc'):
             print("WE ARE EXITING NOW!")
-            k.term()
+            device.term()
             exit(0)

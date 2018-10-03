@@ -1,5 +1,4 @@
 from threading import Thread
-from time import sleep
 
 from controller.Controller import Controller
 from controller.Input import Input
@@ -20,6 +19,9 @@ class XboxController(Controller):
     def __init__(self, device):
         # Needs for logger to start
         super().__init__()
+
+        # Which device this controller listen on
+        self.device = device
 
         # Controller interactions
         self.A = Button('BTN_SOUTH')
@@ -43,32 +45,28 @@ class XboxController(Controller):
         self.RIGHT_BUMPER = Bumper('ABS_RZ')
         self.LEFT_BUMPER = Bumper('ABS_Z')
 
-        self.device = device
-
-        self.kill = False
-        self.reporter_thread = Thread(target=self.__reporter, args=())
         self.event_listener_thread = Thread(target=self.__event_listener, args=())
 
-    def __reporter(self):
-        while not self.kill:
-            sleep(0.1)
+    def read(self):
+        return self.device.read()
 
     def __event_listener(self):
         while not self.kill:
-            for event in self.device.read():
+            for event in self.read():
                 self.parse(event)
 
     def start(self):
-        self.reporter_thread.start()
+        super().start()
+
         self.event_listener_thread.start()
 
     def term(self):
-        self.kill = True
-        self.reporter_thread.join()
+        super().term()
+
         self.event_listener_thread.join()
 
     def parse(self, event):
-        for k, v in self.__dict__.items():
-            if isinstance(v, Input):
-                if v.validate(event):
-                    print(k, v.parse(event))
+        for _, input_ in self.__dict__.items():
+            if isinstance(input_, Input):
+                if input_.validate(event):
+                    input_.parse(event)

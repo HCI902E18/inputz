@@ -2,7 +2,10 @@ from controller.Input import Input
 
 
 class Joystick(Input):
-    def __init__(self, dir_x, dir_y):
+    def __init__(self, dir_x, dir_y, offset=15):
+        super().__init__()
+
+        self.offset_ = offset / 100
         self.events_ = {
             dir_x: 0,
             dir_y: 0
@@ -17,7 +20,6 @@ class Joystick(Input):
             if k == event.code:
                 return True
         return False
-        # return event.code in self.events_
 
     def parse(self, event):
         _, code, state_ = super().parse(event)
@@ -32,9 +34,25 @@ class Joystick(Input):
 
     def calculate(self):
         for key, (_, value) in enumerate(self.events_.items()):
-            if value == 0:
+            val_ = self.calc_vector_value(value)
+            if abs(val_) < self.offset_:
                 self.vector[key] = 0
-            elif value > 0:
-                self.vector[key] = int((value / self.interval[1]) * 100)
-            elif value < 0:
-                self.vector[key] = -int((abs(value) / abs(self.interval[0])) * 100)
+            else:
+                self.vector[key] = val_
+
+    def calc_vector_value(self, value):
+        if value == 0:
+            return 0
+        elif value > 0:
+            return self.percentage(value, self.interval[1])
+        elif value < 0:
+            return -(self.percentage(value, self.interval[0]))
+
+    @staticmethod
+    def percentage(value, max_):
+        return abs(value) / abs(max_)
+
+    def invoke(self):
+        if self.vector == [0, 0]:
+            return False
+        return self.vector
