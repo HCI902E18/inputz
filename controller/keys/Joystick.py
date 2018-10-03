@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from controller.Input import Input
 
 
@@ -11,8 +13,11 @@ class Joystick(Input):
             dir_y: 0
         }
 
+        self.default_vector = [0, 0]
+
         self.interval = [-33000, 33000]
-        self.vector = [0, 0]
+        self.vector = deepcopy(self.default_vector)
+        self.last_report_ = deepcopy(self.default_vector)
 
     def validate(self, event):
         # event.ev_type, event.code, event.state
@@ -53,6 +58,6 @@ class Joystick(Input):
         return abs(value) / abs(max_)
 
     def invoke(self):
-        if self.vector == [0, 0]:
-            return False
-        return self.vector
+        if self.vector == self.last_report_ == self.default_vector:
+            return None
+        return self.set_last_report_(self.vector)

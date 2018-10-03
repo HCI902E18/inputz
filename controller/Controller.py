@@ -33,7 +33,7 @@ class Controller(Logger):
         for key, input_ in self.__dict__.items():
             if isinstance(input_, Input):
                 input_value = input_.invoke()
-                if input_value:
+                if input_value is not None:
                     for invocation in self.invokations:
                         if invocation.is_(key):
                             invocation.invoke(input_value)

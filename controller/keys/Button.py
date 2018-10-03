@@ -8,6 +8,7 @@ class Button(Input):
         self.event_ = event
 
         self.state_ = False
+        self.last_report_ = False
 
     def validate(self, event):
         # event.ev_type, event.code, event.state
@@ -19,4 +20,6 @@ class Button(Input):
         self.state_ = bool(state_)
 
     def invoke(self):
-        return self.state_
+        if self.state_ == self.last_report_ and not self.state_:
+            return None
+        return self.set_last_report_(self.state_)

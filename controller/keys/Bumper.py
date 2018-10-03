@@ -2,7 +2,7 @@ from controller.Input import Input
 
 
 class Bumper(Input):
-    def __init__(self, event, offset=10):
+    def __init__(self, event, offset=0):
         super().__init__()
 
         self.offset_ = offset / 100
@@ -11,6 +11,7 @@ class Bumper(Input):
         self.interval = [0, 255]
 
         self.state_ = 0
+        self.last_report_ = 0
 
     def validate(self, event):
         # event.ev_type, event.code, event.state
@@ -29,6 +30,6 @@ class Bumper(Input):
         self.state_ = val_
 
     def invoke(self):
-        if self.state_ == 0:
-            return False
-        return self.state_
+        if self.state_ == self.last_report_ and self.state_ == 0:
+            return None
+        return self.set_last_report_(self.state_)

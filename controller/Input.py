@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from inputs import InputEvent
 
 from .logging import Logger
@@ -8,7 +10,7 @@ class Input(Logger):
         super().__init__()
 
         self.last_update = 0
-        self.last_check_time = 0
+        self.last_report_ = None
 
     @property
     def name(self):
@@ -25,6 +27,10 @@ class Input(Logger):
 
     def update_time(self, event):
         self.last_update = event.timestamp
+
+    def set_last_report_(self, report):
+        self.last_report_ = deepcopy(report)
+        return report
 
     def invoke(self):
         raise NotImplemented()

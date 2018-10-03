@@ -37,9 +37,9 @@ class XboxController(Controller):
         self.RIGHT_TRIGGER = Button('BTN_TR')
         self.LEFT_TRIGGER = Button('BTN_TL')
 
-        self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y')
+        # self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y')
 
-        self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y')
+        # self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y')
         self.LEFT_STICK_BUTTON = Button('BTN_THUMBL')
         self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY')
         self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')
@@ -48,6 +48,8 @@ class XboxController(Controller):
         self.LEFT_BUMPER = Bumper('ABS_Z')
 
         self.event_listener_thread = Thread(target=self.__event_listener, args=())
+
+        self.vibrating = False
 
     def read(self):
         return self.device.read()
@@ -78,3 +80,11 @@ class XboxController(Controller):
             if isinstance(input_, Input):
                 if input_.validate(event):
                     input_.parse(event)
+
+    def kage(self, value):
+        if value and not self.vibrating:
+            self.vibrating = True
+            self.device.set_vibration(1, 1)
+        elif not value:
+            self.vibrating = False
+            self.device.set_vibration(0, 0)
