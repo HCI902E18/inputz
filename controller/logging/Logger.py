@@ -3,6 +3,11 @@ from logging import getLogger, DEBUG
 
 
 class Logger(object):
+    """
+    Logger
+
+    This class is a libary made for easy and uniform implementation of logging.
+    """
     def __init__(self):
         logging.basicConfig(
             format='[%(name)s][%(levelname)s]: %(message)s'

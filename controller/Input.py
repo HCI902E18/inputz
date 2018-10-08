@@ -33,5 +33,5 @@ class Input(Logger):
         self.last_report_ = deepcopy(report)
         return report
 
-    def invoke(self):
+    def value(self):
         raise NotImplemented()

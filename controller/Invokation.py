@@ -1,12 +1,8 @@
-from typing import TypeVar
-
 from .logging import Logger
-
-func_ = TypeVar('func_')
 
 
 class Invokation(Logger):
-    def __init__(self, key: str, func: func_):
+    def __init__(self, key: str, func: "function"):
         super().__init__()
 
         self.key = key
@@ -15,5 +11,8 @@ class Invokation(Logger):
     def is_(self, key: str) -> bool:
         return self.key.upper() == key.upper()
 
-    def invoke(self, value: object) -> None:
-        self.func(value)
+    def transmit(self, value: object) -> None:
+        if callable(self.func):
+            self.func(value)
+        else:
+            raise Exception('Function is not callable')

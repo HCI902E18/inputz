@@ -19,7 +19,7 @@ class Button(Input):
 
         self.state_ = bool(state_)
 
-    def invoke(self):
+    def value(self):
         if self.state_ == self.last_report_ and not self.state_:
             return None
         return self.set_last_report_(self.state_)

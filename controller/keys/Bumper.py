@@ -29,7 +29,7 @@ class Bumper(Input):
 
         self.state_ = val_
 
-    def invoke(self):
+    def value(self):
         if self.state_ == self.last_report_ and self.state_ == 0:
             return None
         return self.set_last_report_(self.state_)

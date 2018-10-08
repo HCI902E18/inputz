@@ -20,7 +20,6 @@ class Joystick(Input):
         self.last_report_ = deepcopy(self.default_vector)
 
     def validate(self, event):
-        # event.ev_type, event.code, event.state
         for k, _ in self.events_.items():
             if k == event.code:
                 return True
@@ -57,7 +56,7 @@ class Joystick(Input):
     def percentage(value, max_):
         return abs(value) / abs(max_)
 
-    def invoke(self):
+    def value(self):
         if self.vector == self.last_report_ == self.default_vector:
             return None
         return self.set_last_report_(self.vector)

@@ -11,11 +11,11 @@ from controller.keys.Joystick import Joystick
 
 class XboxController(Controller):
     @staticmethod
-    def validate(name):
+    def validate(name: str) -> bool:
         return name == 'Microsoft X-Box 360 pad'
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.device.name
 
     def __init__(self, device):
@@ -55,7 +55,7 @@ class XboxController(Controller):
         return self.device.read()
 
     def __event_listener(self):
-        while not self.kill:
+        while not self.__kill:
             for event in self.read():
                 self.parse(event)
 
@@ -67,11 +67,11 @@ class XboxController(Controller):
         while True:
             if keybard.is_pressed('Esc'):
                 print("WE ARE EXITING NOW!")
-                self.term()
+                self.terminate()
                 exit(0)
 
-    def term(self):
-        super().term()
+    def terminate(self):
+        super().terminate()
 
         self.event_listener_thread.join()
 
