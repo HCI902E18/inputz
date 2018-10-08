@@ -4,10 +4,10 @@ from controller.Input import Input
 
 
 class Joystick(Input):
-    def __init__(self, dir_x, dir_y, offset=15):
+    def __init__(self, dir_x, dir_y, **kwargs):
         super().__init__()
 
-        self.offset_ = offset / 100
+        self.offset_ = kwargs.get('offset', 15) / 100
         self.events_ = {
             dir_x: 0,
             dir_y: 0
@@ -15,7 +15,7 @@ class Joystick(Input):
 
         self.default_vector = [0, 0]
 
-        self.interval = [-33000, 33000]
+        self.interval = deepcopy(kwargs.get('interval', [-33000, 33000]))
         self.vector = deepcopy(self.default_vector)
         self.last_report_ = deepcopy(self.default_vector)
 
@@ -29,8 +29,8 @@ class Joystick(Input):
     def parse(self, event):
         _, code, state_ = super().parse(event)
 
-        if state_ <= self.interval[0] or state_ >= self.interval[1]:
-            print(code, state_)
+        if state_ < self.interval[0] or state_ > self.interval[1]:
+            self.log.error(f"{code}, {state_}")
 
         self.events_[code] = state_
         self.calculate()
