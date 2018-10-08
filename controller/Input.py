@@ -6,27 +6,36 @@ from .logging import Logger
 
 
 class Input(Logger):
+    """
+    Input
+
+    Base class for all input types
+    """
+
     def __init__(self):
         super().__init__()
 
-        self.last_update = 0
+        # The value from last time the input was read
         self.last_report_ = None
 
-    @property
-    def name(self):
-        return self.__class__.__name__.upper()
+    def validate(self, event: InputEvent) -> Exception:
+        """
+        Checks if current event is related to this input
 
-    def validate(self, event):
+        :param event: The event and data related to
+        :return: This is just a base class so this will throw exception
+        """
         raise NotImplemented()
 
     def parse(self, event):
+        """
+        Method used for parsing the event
+        :param event: The InputEvent
+        :return: Type, Code And state of the input
+        """
         if not isinstance(event, InputEvent):
             raise Exception('WRONG INPUT TYPE')
-        self.update_time(event)
         return event.ev_type, event.code, event.state
-
-    def update_time(self, event):
-        self.last_update = event.timestamp
 
     def set_last_report_(self, report):
         # Deepcopy is needed in case of vector (list of two elements)
@@ -34,4 +43,9 @@ class Input(Logger):
         return report
 
     def value(self):
+        """
+        The value of the input
+
+        :return: The value of the input
+        """
         raise NotImplemented()

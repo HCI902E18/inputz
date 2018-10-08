@@ -131,3 +131,10 @@ class Controller(Logger):
         :return: None
         """
         self.__invocations.append(Invokation(key, func))
+
+    def kill_state(self) -> bool:
+        """
+        Getter for the private kill variable
+        :return: is kill running?
+        """
+        return self.__kill

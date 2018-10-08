@@ -55,7 +55,7 @@ class XboxController(Controller):
         return self.device.read()
 
     def __event_listener(self):
-        while not self.__kill:
+        while not self.kill_state():
             for event in self.read():
                 self.parse(event)
 

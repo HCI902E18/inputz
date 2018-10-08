@@ -7,7 +7,7 @@ device = d.get_device()
 
 @device.listen('A', 'B')
 def key_push(value):
-    print(f"key_push value: {value}")
+    print(f"key_push value 2: {value}")
 
 
 @device.listen('RIGHT_BUMPER')
