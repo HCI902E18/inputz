@@ -15,7 +15,7 @@ class Joystick(Input):
 
         self.default_vector = [0, 0]
 
-        self.interval = deepcopy(kwargs.get('interval', [-32767, 32767]))
+        self.interval = deepcopy(kwargs.get('interval', [-32768, 32767]))
         self.vector = deepcopy(self.default_vector)
         self.last_report_ = deepcopy(self.default_vector)
 

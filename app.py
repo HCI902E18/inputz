@@ -10,10 +10,31 @@ def key_push(value):
     print(f"key_push value 2: {value}")
 
 
+@device.listen('A')
+def push_a(value):
+    if value:
+        device.vibrate([1, 1])
+
+    print(f"push_a: {value}")
+
+
+@device.listen('B')
+def push_b(value):
+    if value:
+        device.vibrate([0, 0])
+    print(f"push_b: {value}")
+
+
 @device.listen('RIGHT_BUMPER')
 def right_bumper(value):
-    device.vibrate(value)
+    device.vibrate_right(value)
     print(f"right_bumpervalue: {value}")
+
+
+@device.listen('LEFT_BUMPER')
+def left_bumper(value):
+    device.vibrate_left(value)
+    print(f"left_bumpervalue: {value}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
+from copy import deepcopy
 from threading import Thread
 
 import keyboard as keybard
+from inputs import UnpluggedError
 
 from controller.Controller import Controller
 from controller.Input import Input
@@ -49,10 +51,14 @@ class XboxController(Controller):
 
         self.event_listener_thread = Thread(target=self.__event_listener, args=())
 
-        self.vibrating = False
+        self.vibrate_state = [0, 0]
 
     def read(self):
-        return self.device.read()
+        try:
+            return self.device.read()
+        except UnpluggedError:
+            self.log.error("The controller has been unplugged")
+            exit(1)
 
     def __event_listener(self):
         while not self.kill_state():
@@ -81,10 +87,23 @@ class XboxController(Controller):
                 if input_.validate(event):
                     input_.parse(event)
 
-    def vibrate(self, value):
-        val = value
+    def vibrate(self, value: list):
+        if not isinstance(value, list) or len(value) != 2:
+            return
+        self.set_vibrate(deepcopy(value))
 
-        self.device.set_vibration(
-            val,
-            val
-        )
+    def vibrate_left(self, value: int):
+        self.set_vibrate(value, 0)
+
+    def vibrate_right(self, value: int):
+        self.set_vibrate(value, 1)
+
+    def set_vibrate(self, value, idx=None):
+        if idx is None:
+            self.vibrate_state = value
+        else:
+            self.vibrate_state[idx] = value
+        self.update_vibrate()
+
+    def update_vibrate(self):
+        self.device.set_vibration(*self.vibrate_state)
