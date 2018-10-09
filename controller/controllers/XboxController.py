@@ -106,4 +106,4 @@ class XboxController(Controller):
         self.update_vibrate()
 
     def update_vibrate(self):
-        self.device.set_vibration(*self.vibrate_state)
+        self.device._start_vibration_win(*self.vibrate_state)
