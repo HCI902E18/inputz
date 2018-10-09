@@ -16,7 +16,7 @@ class Input(Logger):
         super().__init__()
 
         # The value from last time the input was read
-        self.last_report_ = None
+        self._last_report = None
 
     def validate(self, event: InputEvent) -> Exception:
         """
@@ -37,9 +37,9 @@ class Input(Logger):
             raise Exception('WRONG INPUT TYPE')
         return event.ev_type, event.code, event.state
 
-    def set_last_report_(self, report):
+    def _set_last_report(self, report):
         # Deepcopy is needed in case of vector (list of two elements)
-        self.last_report_ = deepcopy(report)
+        self._last_report = deepcopy(report)
         return report
 
     def value(self):

@@ -3,9 +3,9 @@ from time import sleep
 
 import keyboard as keybard
 
-from .KillableThread import KillableThread
 from .Input import Input
 from .Invokation import Invokation
+from .KillableThread import KillableThread
 from .logging import Logger
 
 
@@ -25,7 +25,8 @@ class Controller(Logger):
 
         # Thread used for reporter
         self.killer_thread = 'tronald_dump'
-        self.threads = [
+
+        self.__threads = [
             KillableThread(name='reporter', target=self.__reporter, args=()),
             KillableThread(name=self.killer_thread, target=self.__killer, args=())
         ]
@@ -53,19 +54,33 @@ class Controller(Logger):
 
         :return: None
         """
-        for thread in self.threads:
+        for thread in self.__threads:
             thread.start()
 
-    def __killer(self):
+    def __killer(self) -> None:
+        """
+        Killer thread
+        This method is burning dem CPU cycles, but in return it's listening for that escape key
+
+        :return: None
+        """
         while True:
             if keybard.is_pressed('Esc'):
                 print("WE ARE EXITING NOW!")
                 self.terminate()
                 exit(0)
 
-    def add_thread(self, thread: KillableThread):
+    def add_thread(self, thread: KillableThread) -> bool:
+        """
+        A contoller may run multiple threads in order to keep track of multiple I/O operations
+
+        :param thread: The thread which should be added to the pool
+        :return: Boolean if the thread is added
+        """
         if isinstance(thread, KillableThread):
-            self.threads.append(thread)
+            self.__threads.append(thread)
+            return True
+        return False
 
     def terminate(self) -> None:
         """
@@ -75,9 +90,10 @@ class Controller(Logger):
         """
         self.__kill = True
 
-        for t in self.threads:
-            if t.name != self.killer_thread:
-                t.kill_to_tha_max()
+        for thread in self.__threads:
+            # A thread cannot kill it self, but this specific thread kills it self anyway
+            if thread.name != self.killer_thread:
+                thread.kill(consequences=True)
 
     def __check_keys(self) -> None:
         """

@@ -1,35 +1,71 @@
+from copy import deepcopy
+
+from inputs import InputEvent
+
 from controller.Input import Input
 
 
 class Bumper(Input):
-    def __init__(self, event, offset=0):
+    """
+    Class mapping to X-Box Bumpers
+    """
+
+    def __init__(self, event, **kwargs):
         super().__init__()
 
-        self.offset_ = offset / 100
+        # Bumper might wobble, so this value is to filter those
+        self.__offset = kwargs.get('offset', 0) / 100
 
-        self.event_ = event
-        self.interval = [0, 255]
+        # This is the event the bumper will listen for
+        self.__event = event
+        # The interval the event will be within
+        self.interval = deepcopy(kwargs.get('interval', [0, 255]))
 
-        self.state_ = 0
-        self.last_report_ = 0
+        # The current state of the bumper
+        self.__state = 0
+        # The last value the bumper reported to functions listen for it
+        self._last_report = 0
 
-    def validate(self, event):
-        # event.ev_type, event.code, event.state
-        return event.code == self.event_
+    def validate(self, event) -> bool:
+        """
+        Validates if this event is for this bumper
 
-    def parse(self, event):
+        :param event: Event from the controller
+        :return: bool
+        """
+        if not isinstance(event, InputEvent): return False
+        return event.code == self.__event
+
+    def parse(self, event) -> None:
+        """
+        Parse the event to get data for this bumper.
+
+        :param event: The event which data should be extracted from.
+        :return: None
+        """
+        if not isinstance(event, InputEvent): return
         _, _, state_ = super().parse(event)
 
         val_ = 0
+
+        # Checks that the event value is between the interval
         if self.interval[0] <= state_ <= self.interval[1]:
             val_ = state_ / self.interval[1]
 
-        if val_ < self.offset_:
+        # If the value is within the wobble boundary, remove
+        if val_ < self.__offset:
             val_ = 0
 
-        self.state_ = val_
+        self.__state = val_
 
-    def value(self):
-        if self.state_ == self.last_report_ and self.state_ == 0:
+    def value(self) -> float:
+        """
+        Method that returns the value of the bumper.
+        Returns the value if the value changed since last report
+        Else report `None`
+
+        :return: None or float
+        """
+        if self.__state == self._last_report and self.__state == 0:
             return None
-        return self.set_last_report_(self.state_)
+        return self._set_last_report(self.__state)

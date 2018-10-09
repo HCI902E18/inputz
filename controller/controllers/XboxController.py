@@ -1,10 +1,11 @@
+import enum
 from copy import deepcopy
 
-from inputs import UnpluggedError
+from inputs import UnpluggedError, InputEvent
 
-from controller.KillableThread import KillableThread
 from controller.Controller import Controller
 from controller.Input import Input
+from controller.KillableThread import KillableThread
 from controller.OS import OS
 from controller.keys.Bumper import Bumper
 from controller.keys.Button import Button
@@ -15,15 +16,25 @@ class XboxController(Controller):
     """
     Xbox controller mappings
 
-
     """
 
     @staticmethod
     def validate(name: str) -> bool:
+        """
+        Used to validate if the name of the controller matches this controller
+
+        :param name: The name of the input controller
+        :return: bool, if the controller matches
+        """
         return name == 'Microsoft X-Box 360 pad'
 
     @property
     def name(self) -> str:
+        """
+        Gets the name of the connected device
+
+        :return: String, name of device
+        """
         return self.device.name
 
     def __init__(self, device):
@@ -33,7 +44,7 @@ class XboxController(Controller):
         # Which device this controller listen on
         self.device = device
 
-        # Controller interactions
+        # Maps all the buttons on the controller
         self.A = Button('BTN_SOUTH')
         self.B = Button('BTN_EAST')
         self.X = Button('BTN_WEST')
@@ -55,49 +66,111 @@ class XboxController(Controller):
         self.RIGHT_BUMPER = Bumper('ABS_RZ')
         self.LEFT_BUMPER = Bumper('ABS_Z')
 
-        self.add_thread(KillableThread(target=self.__event_listener, args=()))
+        # This controller needs a thread which listens for controller inputs
+        self.add_thread(KillableThread(name="ControllerThread", target=self.__event_listener, args=()))
 
+        # Vibration vector
         self.vibrate_state = [0, 0]
 
-    def read(self):
+    class Side(enum.Enum):
+        left = 0
+        right = 1
+
+    def read(self) -> list:
+        """
+        Method used for reading the input from the controller
+
+        :return: list, the events from inputs on controller
+        """
         try:
             return self.device.read()
         except UnpluggedError:
+            # If controller looses connection, this will catch it.
             self.log.error("The controller has been unplugged")
             exit(1)
 
-    def __event_listener(self):
+    def __event_listener(self) -> None:
+        """
+        Thread method which handles all events from controller
+
+        :return: None
+        """
         while not self.kill_state():
             for event in self.read():
                 self.parse(event)
 
-    def parse(self, event):
-        for _, input_ in self.__dict__.items():
-            if isinstance(input_, Input):
-                if input_.validate(event):
-                    input_.parse(event)
+    def parse(self, event: InputEvent) -> None:
+        """
+        Parser for controller events, tests whether the event belongs to a specific input
 
-    def vibrate(self, value: list):
+        :param event: the event from the controller
+        :return: None
+        """
+
+        # We iterate through all properties on the class it self.
+        for _, cls_prop in self.__dict__.items():
+            # Checks if the property is instance of input
+            if isinstance(cls_prop, Input):
+                # Checks if the event belongs to this property
+                if cls_prop.validate(event):
+                    # Parse the event according to the input
+                    cls_prop.parse(event)
+
+    def vibrate(self, value: list) -> None:
+        """
+        Method used for vibrating the entire controller
+
+        :param value: list of vibration level, scale is 0..1
+        :return: None
+        """
         if not isinstance(value, list) or len(value) != 2:
+            self.log.warn("Invalid vibration format")
             return
-        self.set_vibrate(deepcopy(value))
+        self.set_vibrate(value)
 
-    def vibrate_left(self, value: int):
-        self.set_vibrate(value, 0)
+    def vibrate_left(self, value: int) -> None:
+        """
+        Method for vibrate only the left site of the controller
 
-    def vibrate_right(self, value: int):
-        self.set_vibrate(value, 1)
+        :param value: Integer value, 0..1
+        :return: None
+        """
+        self.set_vibrate(value, self.Side.left)
 
-    def set_vibrate(self, value, idx=None):
-        if idx is None:
-            self.vibrate_state = value
-        else:
-            self.vibrate_state[idx] = value
+    def vibrate_right(self, value: int) -> None:
+        """
+        Method for vibrate only the right site of the controller
+
+        :param value: Integer value, 0..1
+        :return: None
+        """
+        self.set_vibrate(value, self.Side.right)
+
+    def set_vibrate(self, value, side=None) -> None:
+        """
+        Sets the vibration value in vibration state
+
+        :param value: The value for the vibration state
+        :param side: The side of the controller
+        :return: None
+        """
+        if isinstance(side, self.Side):
+            self.vibrate_state[side.value] = value
+        elif isinstance(value, list):
+            # We need deep copy, not the reference
+            self.vibrate_state = deepcopy(value)
+
+        # Send the update to the controller
         self.update_vibrate()
 
-    def update_vibrate(self):
+    def update_vibrate(self) -> None:
+        """
+        Send the vibration state to the controller
+
+        :return: None
+        """
         if OS.WIN:
             self.device._start_vibration_win(*self.vibrate_state)
         elif OS.NIX:
-            # Hashtag, untested!
+            # untested!
             self.device._set_vibration_nix(*self.vibrate_state, 1000)

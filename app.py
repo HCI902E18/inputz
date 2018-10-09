@@ -37,5 +37,11 @@ def left_bumper(value):
     print(f"left_bumpervalue: {value}")
 
 
+@device.listen('RIGHT_STICK')
+def right_stick(value):
+    device.vibrate(value)
+    print(f"right_stick: {value}")
+
+
 if __name__ == "__main__":
     device.start()
