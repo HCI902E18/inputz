@@ -104,9 +104,7 @@ class Joystick(Input):
         :param _max: The value of the denominator
         :return: float
         """
-        if value < 0:
-            return -(abs(value) / abs(_max))
-        return abs(value) / abs(_max)
+        return value / abs(_max)
 
     def value(self) -> list:
         """
