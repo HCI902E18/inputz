@@ -46,12 +46,15 @@ class Controller(Logger):
         :return: None
         """
         while not self.__kill:
+            # Start tick
             start_time = time.time()
 
             self.__check_keys()
 
+            # Calculate the time that the reporter should sleep
             sleep_time = self._tick_rate - (time.time() - start_time)
 
+            # Handle too slow calculations
             if sleep_time > 0:
                 sleep(sleep_time)
             else:
