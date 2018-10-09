@@ -1,6 +1,6 @@
 from inputs import devices
 
-from inputz.Controller import Controller
+from .Controller import Controller
 from .controllers import XboxController
 from .logging import Logger
 
