@@ -2,6 +2,9 @@ from functools import wraps
 from threading import Thread
 from time import sleep
 
+import keyboard as keybard
+
+from KillableThread import KillableThread
 from .Input import Input
 from .Invokation import Invokation
 from .logging import Logger
@@ -22,7 +25,11 @@ class Controller(Logger):
         self.__kill = False
 
         # Thread used for reporter
-        self.__reporter_thread = Thread(target=self.__reporter, args=())
+        self.killer_thread = 'tronald_dump'
+        self.threads = [
+            KillableThread(name='reporter', target=self.__reporter, args=()),
+            KillableThread(name=self.killer_thread, target=self.__killer, args=())
+        ]
 
         # List of functions waiting for event to trigger
         self.__invocations = []
@@ -43,11 +50,23 @@ class Controller(Logger):
 
     def start(self) -> None:
         """
-        Method used to start the reporter thread
+        Method used to start all the threads
 
         :return: None
         """
-        self.__reporter_thread.start()
+        for thread in self.threads:
+            thread.start()
+
+    def __killer(self):
+        while True:
+            if keybard.is_pressed('Esc'):
+                print("WE ARE EXITING NOW!")
+                self.terminate()
+                exit(0)
+
+    def add_thread(self, thread: KillableThread):
+        if isinstance(thread, KillableThread):
+            self.threads.append(thread)
 
     def terminate(self) -> None:
         """
@@ -57,7 +76,9 @@ class Controller(Logger):
         """
         self.__kill = True
 
-        self.__reporter_thread.join()
+        for t in self.threads:
+            if t.name != self.killer_thread:
+                t.kill_to_tha_max()
 
     def __check_keys(self) -> None:
         """

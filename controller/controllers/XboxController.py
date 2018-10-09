@@ -1,17 +1,23 @@
 from copy import deepcopy
-from threading import Thread
 
-import keyboard as keybard
 from inputs import UnpluggedError
 
+from KillableThread import KillableThread
 from controller.Controller import Controller
 from controller.Input import Input
+from controller.OS import OS
 from controller.keys.Bumper import Bumper
 from controller.keys.Button import Button
 from controller.keys.Joystick import Joystick
 
 
 class XboxController(Controller):
+    """
+    Xbox controller mappings
+
+
+    """
+
     @staticmethod
     def validate(name: str) -> bool:
         return name == 'Microsoft X-Box 360 pad'
@@ -49,7 +55,7 @@ class XboxController(Controller):
         self.RIGHT_BUMPER = Bumper('ABS_RZ')
         self.LEFT_BUMPER = Bumper('ABS_Z')
 
-        self.event_listener_thread = Thread(target=self.__event_listener, args=())
+        self.add_thread(KillableThread(target=self.__event_listener, args=()))
 
         self.vibrate_state = [0, 0]
 
@@ -64,22 +70,6 @@ class XboxController(Controller):
         while not self.kill_state():
             for event in self.read():
                 self.parse(event)
-
-    def start(self):
-        super().start()
-
-        self.event_listener_thread.start()
-
-        while True:
-            if keybard.is_pressed('Esc'):
-                print("WE ARE EXITING NOW!")
-                self.terminate()
-                exit(0)
-
-    def terminate(self):
-        super().terminate()
-
-        self.event_listener_thread.join()
 
     def parse(self, event):
         for _, input_ in self.__dict__.items():
@@ -106,4 +96,8 @@ class XboxController(Controller):
         self.update_vibrate()
 
     def update_vibrate(self):
-        self.device._start_vibration_win(*self.vibrate_state)
+        if OS.WIN:
+            self.device._start_vibration_win(*self.vibrate_state)
+        elif OS.NIX:
+            # Hashtag, untested!
+            self.device._set_vibration_nix(*self.vibrate_state, 1000)
