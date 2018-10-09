@@ -1,6 +1,6 @@
 from inputs import InputEvent
 
-from controller.Input import Input
+from inputz.Input import Input
 
 
 class Button(Input):

@@ -1,4 +1,4 @@
-from controller.Devices import Devices
+from inputz.Devices import Devices
 
 d = Devices()
 

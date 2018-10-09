@@ -3,13 +3,13 @@ from copy import deepcopy
 
 from inputs import UnpluggedError, InputEvent
 
-from controller.Controller import Controller
-from controller.Input import Input
-from controller.KillableThread import KillableThread
-from controller.OS import OS
-from controller.keys.Bumper import Bumper
-from controller.keys.Button import Button
-from controller.keys.Joystick import Joystick
+from inputz.Controller import Controller
+from inputz.Input import Input
+from inputz.KillableThread import KillableThread
+from inputz.OS import OS
+from inputz.keys import Bumper
+from inputz.keys.Button import Button
+from inputz.keys.Joystick import Joystick
 
 
 class XboxController(Controller):
