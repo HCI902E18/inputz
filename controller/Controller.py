@@ -1,3 +1,4 @@
+import time
 from functools import wraps
 from time import sleep
 
@@ -34,8 +35,8 @@ class Controller(Logger):
         # List of functions waiting for event to trigger
         self.__invocations = []
 
-        # Report 10 times a second
-        self.__rate = 0.1
+        # Tickrate of the reporter, 0.1 = 10 ticks a second
+        self._tick_rate = 0.1
 
     def __reporter(self) -> None:
         """
@@ -45,8 +46,19 @@ class Controller(Logger):
         :return: None
         """
         while not self.__kill:
+            start_time = time.time()
+
             self.__check_keys()
-            sleep(self.__rate)
+
+            sleep_time = self._tick_rate - (time.time() - start_time)
+
+            if sleep_time > 0:
+                sleep(sleep_time)
+            else:
+                self.log.error(f"Tick took too long, skipping")
+
+                overflow = round(abs(sleep_time), 5)
+                self.log.debug(f"Tick overshoot by {overflow}ms")
 
     def start(self) -> None:
         """
