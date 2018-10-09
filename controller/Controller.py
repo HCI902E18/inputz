@@ -1,10 +1,9 @@
 from functools import wraps
-from threading import Thread
 from time import sleep
 
 import keyboard as keybard
 
-from KillableThread import KillableThread
+from .KillableThread import KillableThread
 from .Input import Input
 from .Invokation import Invokation
 from .logging import Logger

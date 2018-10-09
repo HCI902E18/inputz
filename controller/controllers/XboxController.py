@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from inputs import UnpluggedError
 
-from KillableThread import KillableThread
+from controller.KillableThread import KillableThread
 from controller.Controller import Controller
 from controller.Input import Input
 from controller.OS import OS
