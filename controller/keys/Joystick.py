@@ -92,10 +92,8 @@ class Joystick(Input):
 
         if value == 0:
             return 0
-        elif value > 0:
-            return self.percentage(value, self.interval[1])
-        elif value < 0:
-            return -(self.percentage(value, self.interval[0]))
+        else:
+            return self.percentage(value, self.interval[1 if value > 0 else 0])
 
     @staticmethod
     def percentage(value: int, _max: int) -> float:
@@ -106,6 +104,8 @@ class Joystick(Input):
         :param _max: The value of the denominator
         :return: float
         """
+        if value < 0:
+            return -(abs(value) / abs(_max))
         return abs(value) / abs(_max)
 
     def value(self) -> list:
