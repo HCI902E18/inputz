@@ -21,14 +21,18 @@ class Invokation(Logger):
         """
         return self.key.upper() == key.upper()
 
-    def transmit(self, value: object) -> None:
+    def transmit(self, value: object, cls: object) -> None:
         """
         Method used for sending data to functions
 
-        :param value: the value which should be passed on to the function
+        :param value: The value which should be passed on to the function
+        :param cls: The class which the method may belong to
         :return: None
         """
         if callable(self.func):
-            self.func(value)
+            if cls is None:
+                self.func(value)
+            else:
+                self.func(cls, value)
         else:
             raise Exception('Function is not callable')

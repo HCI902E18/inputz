@@ -38,6 +38,9 @@ class Controller(Logger):
         # Tickrate of the reporter, 0.1 = 10 ticks a second
         self._tick_rate = 0.1
 
+        # Used for class decorators
+        self.cls = None
+
     def __reporter(self) -> None:
         """
         Thread method, checks in intervals what button are pressed.
@@ -63,12 +66,14 @@ class Controller(Logger):
                 overflow = round(abs(sleep_time), 5)
                 self.log.debug(f"Tick overshoot by {overflow}ms")
 
-    def start(self) -> None:
+    def start(self, cls: object = None) -> None:
         """
         Method used to start all the threads
 
+        :param cls: Class used for method decorators
         :return: None
         """
+        self.cls = cls
         for thread in self.__threads:
             thread.start()
 
@@ -136,7 +141,7 @@ class Controller(Logger):
                         # Checks if invocations is listening for current key
                         if invocation.is_(key):
                             # Transmit value to invocation
-                            invocation.transmit(input_value)
+                            invocation.transmit(input_value, self.cls)
 
     def listen(self, *keys) -> "function":
         """
