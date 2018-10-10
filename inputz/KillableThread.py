@@ -11,10 +11,13 @@ class KillableThread(threading.Thread):
                              understands the consequences of this method
         :return: None
         """
+        if not consequences:
+            raise RuntimeError("YOU NEED TO UNDERSTAND THE CONSEQUENCES OF THIS METHOD")
+
         lock = self._tstate_lock
 
         # THIS THREADING SHOULD NOT HOLD CRITICAL CODE
         if lock is not None:
             lock.release()
 
-        self._wait_for_tstate_lock(1)
+        self.join()
