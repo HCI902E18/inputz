@@ -1,4 +1,4 @@
-from .logging import Logger
+from inputz.logging import Logger
 
 
 class Invokation(Logger):
@@ -6,11 +6,11 @@ class Invokation(Logger):
     Class used for triggering functions through bindings
     """
 
-    def __init__(self, key: str, func: "function"):
+    def __init__(self, func: "function", key: str):
         super().__init__()
 
-        self.key = key
         self.func = func
+        self.key = key
 
     def is_(self, key: str) -> bool:
         """
@@ -21,7 +21,7 @@ class Invokation(Logger):
         """
         return self.key.upper() == key.upper()
 
-    def transmit(self, value: object, cls: object) -> None:
+    def transmit(self, value: object) -> None:
         """
         Method used for sending data to functions
 
@@ -30,9 +30,6 @@ class Invokation(Logger):
         :return: None
         """
         if callable(self.func):
-            if cls is None:
-                self.func(value)
-            else:
-                self.func(cls, value)
+            self.func(value)
         else:
             raise Exception('Function is not callable')

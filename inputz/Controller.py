@@ -1,12 +1,11 @@
 import time
-from functools import wraps
 from time import sleep
 
 import keyboard as keybard
 
 from .Input import Input
-from .Invokation import Invokation
 from .KillableThread import KillableThread
+from .invokations import Invokation
 from .logging import Logger
 
 
@@ -38,9 +37,6 @@ class Controller(Logger):
         # Tickrate of the reporter, 0.1 = 10 ticks a second
         self._tick_rate = 0.1
 
-        # Used for class decorators
-        self.cls = None
-
     def __reporter(self) -> None:
         """
         Thread method, checks in intervals what button are pressed.
@@ -66,14 +62,12 @@ class Controller(Logger):
                 overflow = round(abs(sleep_time), 5)
                 self.log.debug(f"Tick overshoot by {overflow}ms")
 
-    def start(self, cls: object = None) -> None:
+    def start(self) -> None:
         """
         Method used to start all the threads
 
-        :param cls: Class used for method decorators
         :return: None
         """
-        self.cls = cls
         for thread in self.__threads:
             thread.start()
 
@@ -141,7 +135,21 @@ class Controller(Logger):
                         # Checks if invocations is listening for current key
                         if invocation.is_(key):
                             # Transmit value to invocation
-                            invocation.transmit(input_value, self.cls)
+                            invocation.transmit(input_value)
+
+    def method_listener(self, func: "function", keys) -> None:
+        """
+        Method for binding methods from other class instances
+
+        :param func: The function to be called
+        :param keys: Key as string or list
+        :return: None
+        """
+        if isinstance(keys, list):
+            for key in keys:
+                self.__bind(func, key)
+        else:
+            self.__bind(func, keys)
 
     def listen(self, *keys) -> "function":
         """
@@ -158,35 +166,30 @@ class Controller(Logger):
 
     def __internal_listen(self, func: "function", keys) -> "function":
         """
-        Internal function decorator, maps one to many keys to one function
+        Allows controller, to make function calls via reporter
 
-        :param func: The function to be decorated
+        :param func: The function to be called
         :param keys: Keys either as string or tuple
         :return: Returns the decorated function
         """
 
-        @wraps(func)
-        def decorated_function(*args, **kwargs):
-            return func(*args, **kwargs)
-
-        # If keys is list, map function to all keys
         if isinstance(keys, tuple):
             for key in keys:
-                self.__bind(key, decorated_function)
+                self.__bind(func, key)
         else:
-            self.__bind(keys, decorated_function)
+            self.__bind(func, keys)
 
-        return decorated_function
+        return func
 
-    def __bind(self, key: str, func: "function") -> None:
+    def __bind(self, func: "function", key: str) -> None:
         """
         Binds the key to the function
 
-        :param key: Key as string
         :param func: The function to bind
+        :param key: Key as string
         :return: None
         """
-        self.__invocations.append(Invokation(key, func))
+        self.__invocations.append(Invokation(func, key))
 
     def kill_state(self) -> bool:
         """
