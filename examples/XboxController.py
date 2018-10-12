@@ -27,19 +27,17 @@ def push_b(value):
 
 @device.listen('RIGHT_BUMPER')
 def right_bumper(value):
-    device.vibrate_right(value)
     print(f"right_bumpervalue: {value}")
 
 
 @device.listen('LEFT_BUMPER')
 def left_bumper(value):
-    device.vibrate_left(value)
     print(f"left_bumpervalue: {value}")
 
 
 @device.listen('RIGHT_STICK')
 def right_stick(value):
-    device.vibrate(value)
+    # device.vibrate(value)
     print(f"right_stick: {value}")
 
 

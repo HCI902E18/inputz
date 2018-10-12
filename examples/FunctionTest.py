@@ -12,10 +12,10 @@ def test_func(args):
 
 
 if __name__ == "__main__":
-    test_func("kage")
-    test_func("kage")
-    test_func("kage")
-    test_func("kage")
-    test_func("kage")
-    test_func("kage")
+    test_func("1")
+    test_func("2")
+    test_func("3")
+    test_func("4")
+    test_func("5")
+    test_func("6")
     device.start()

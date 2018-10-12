@@ -80,7 +80,13 @@ class Joystick(Input):
             if abs(val_) < self.offset_:
                 self.vector[key] = 0
             else:
-                self.vector[key] = val_
+                # Calculate value without offset
+                val_ = val_ + self.offset_ if val_ < 0 else val_ - self.offset_
+
+                # Maximum with offset
+                max_percent = 1 - self.offset_
+
+                self.vector[key] = val_ / max_percent
 
     def calc_vector_value(self, value: int) -> float:
         """
@@ -92,8 +98,7 @@ class Joystick(Input):
 
         if value == 0:
             return 0
-        else:
-            return self.percentage(value, self.interval[1 if value > 0 else 0])
+        return self.percentage(value, self.interval[1 if value > 0 else 0])
 
     @staticmethod
     def percentage(value: int, _max: int) -> float:
