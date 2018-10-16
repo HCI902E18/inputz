@@ -85,8 +85,11 @@ class XboxController(Controller):
         try:
             return self.device.read()
         except UnpluggedError:
+            # In case of disconnection, ABORT EVERYTHING
+            self.abort()
+
             # If controller looses connection, this will catch it.
-            self.log.error("The controller has been unplugged")
+            self.log.error("The controller has been unplugged, application terminating")
             exit(1)
 
     def __event_listener(self) -> None:

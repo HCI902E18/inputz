@@ -1,4 +1,5 @@
 import time
+from queue import Queue
 from time import sleep
 
 import keyboard as keybard
@@ -37,6 +38,16 @@ class Controller(Logger):
         # Tickrate of the reporter, 0.1 = 10 ticks a second
         self._tick_rate = 0.1
 
+        # Functions or method called in case of controller disconnection
+        self.__abort_methods = Queue()
+
+        # Property used for thread killing in case of controller disconnection
+        self.__self_destruct = False
+
+        # Used for the controller to run in unsecure mode, which means that the decorated functions or classes
+        # does not handle controller disconnection
+        self.__unsecure = False
+
     def __reporter(self) -> None:
         """
         Thread method, checks in intervals what button are pressed.
@@ -68,6 +79,13 @@ class Controller(Logger):
 
         :return: None
         """
+
+        if self.__abort_methods.qsize() == 0 and not self.__unsecure:
+            self.log.error("No abort method or functions found")
+            self.log.error("These need to be handled in case of controller disconnection")
+            self.log.error("OR run the controller in unsecure mode. (device.run_unsecure())")
+            exit(1)
+
         for thread in self.__threads:
             thread.start()
 
@@ -79,7 +97,7 @@ class Controller(Logger):
         :return: None
         """
         while True:
-            if keybard.is_pressed('Esc'):
+            if keybard.is_pressed('Esc') or self.__self_destruct:
                 print("WE ARE EXITING NOW!")
                 self.terminate()
                 exit(0)
@@ -197,3 +215,49 @@ class Controller(Logger):
         :return: is kill running?
         """
         return self.__kill
+
+    def abort(self) -> None:
+        """
+        Methods which invokes ALL abort method and functions
+
+        :return: None
+        """
+        # Sets the controller in self destruct mode so all threads are killed safe-fully
+        self.__self_destruct = True
+
+        # Call all methods in abort queue, called in FIFO order
+        while self.__abort_methods.qsize() > 0:
+            # Pop first method or function
+            func = self.__abort_methods.get()
+
+            # Call method or function
+            func()
+
+    def abort_method(self, method: "function") -> None:
+        """
+        Decorator for class methods which should be executed in case of a disconnect
+
+        :param method: A method to be run when program aborts
+        :return: None
+        """
+        self.__abort_methods.put(method)
+        return
+
+    def abort_function(self, func: "function") -> "function":
+        """
+        Decorator for function which should be executed in case of a disconnect
+
+        :param func: A function to be run when program aborts
+        :return: Returns the same function as given as parameter
+        """
+        self.__abort_methods.put(func)
+
+        return func
+
+    def run_unsecure(self) -> None:
+        """
+        Method which allows the controller to run with no method or functions to handle controller disconnection
+
+        :return: None
+        """
+        self.__unsecure = True

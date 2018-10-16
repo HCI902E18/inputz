@@ -17,7 +17,7 @@ class KillableThread(threading.Thread):
         lock = self._tstate_lock
 
         # THIS THREADING SHOULD NOT HOLD CRITICAL CODE
-        if lock is not None:
+        if lock is not None and lock.locked():
             lock.release()
 
         self.join()
