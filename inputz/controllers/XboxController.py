@@ -100,6 +100,7 @@ class XboxController(Controller):
         """
         while not self.kill_state():
             for event in self.read():
+                self.log.debug(event.code)
                 self.parse(event)
 
     def parse(self, event: InputEvent) -> None:

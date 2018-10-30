@@ -41,5 +41,12 @@ def right_stick(value):
     print(f"right_stick: {value}")
 
 
+@device.listen('LEFT_STICK')
+def left_stick(value):
+    # device.vibrate(value)
+    print(f"left_stick: {value}")
+
+
 if __name__ == "__main__":
+    device.run_unsecure()
     device.start()
