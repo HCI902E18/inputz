@@ -213,6 +213,15 @@ class Controller(Logger):
         """
         self.__invocations.append(Invokation(func, key))
 
+    def clear_invocations(self) -> None:
+        """
+        Clears all current bindings
+
+        :return: None
+        """
+        while len(self.__invocations) > 0:
+            self.__invocations.pop()
+
     def kill_state(self) -> bool:
         """
         Getter for the private kill variable
