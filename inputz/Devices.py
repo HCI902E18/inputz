@@ -1,5 +1,6 @@
 from inputs import devices
 
+from inputz.exceptions.ControllerNotFound import ControllerNotFound
 from .Controller import Controller
 from .controllers import XboxController, XboxEliteController
 from .logging import Logger
@@ -45,7 +46,7 @@ class Devices(Logger):
         # Checks if any controllers were found
         if len(_controllers) == 0:
             self.log.error("No supported controller found.")
-            return None
+            raise ControllerNotFound()
 
         # Handle the case where multiple controllers were found
         elif len(_controllers) > 1:

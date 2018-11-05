@@ -50,8 +50,8 @@ class XboxController(Controller):
         self.X = Button('BTN_WEST')
         self.Y = Button('BTN_NORTH')
 
-        self.START = Button('BTN_SELECT')
-        self.SELECT = Button('BTN_START')
+        self.START = Button(self.reverse_binding(win='BTN_SELECT', linux='BTN_START'))
+        self.SELECT = Button(self.reverse_binding(win='BTN_START', linux='BTN_SELECT'))
 
         self.RIGHT_TRIGGER = Button('BTN_TR')
         self.LEFT_TRIGGER = Button('BTN_TL')
@@ -75,6 +75,19 @@ class XboxController(Controller):
     class Side(enum.Enum):
         left = 0
         right = 1
+
+    def value_parser(self, value):
+        if isinstance(value, list):
+            if self.os == self.OS.linux:
+                value[1] = -value[1]
+        return value
+
+    def reverse_binding(self, **kwargs):
+        if self.os == self.OS.win:
+            return kwargs.get('win')
+        elif self.os == self.OS.linux:
+            return kwargs.get('linux')
+        raise Exception('Mac is not yet supported')
 
     def read(self) -> list:
         """

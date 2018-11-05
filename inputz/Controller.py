@@ -1,3 +1,5 @@
+import enum
+import platform
 import time
 from queue import Queue
 from time import sleep
@@ -47,6 +49,10 @@ class Controller(Logger):
         # Used for the controller to run in unsecure mode, which means that the decorated functions or classes
         # does not handle controller disconnection
         self.__unsecure = False
+
+    class OS(enum.Enum):
+        win = 'win'
+        linux = 'linux'
 
     def __reporter(self) -> None:
         """
@@ -157,7 +163,10 @@ class Controller(Logger):
                         # Checks if invocations is listening for current key
                         if invocation.is_(key):
                             # Transmit value to invocation
-                            invocation.transmit(input_value)
+                            invocation.transmit(self.value_parser(input_value))
+
+    def value_parser(self, value):
+        return value
 
     def method_listener(self, func: "function", keys) -> None:
         """
@@ -274,3 +283,11 @@ class Controller(Logger):
         :return: None
         """
         self.__unsecure = True
+
+    @property
+    def os(self):
+        if platform.system() == 'Windows':
+            return self.OS.win
+        elif platform.system() == 'Linux':
+            return self.OS.linux
+        raise Exception('MAC NOT SUPPORTED')
