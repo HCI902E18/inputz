@@ -96,11 +96,15 @@ class Controller(Logger):
 
         :return: None
         """
-        while True:
-            if keybard.is_pressed('Esc') or self.__self_destruct:
-                self.log.error("WE ARE EXITING NOW!")
-                self.terminate()
-                exit(0)
+        try:
+            while True:
+                if keybard.is_pressed('Esc') or self.__self_destruct:
+                    self.log.error("WE ARE EXITING NOW!")
+                    self.terminate()
+                    exit(0)
+        # Not root on linux
+        except Exception:
+            pass
 
     def add_thread(self, thread: KillableThread) -> bool:
         """
