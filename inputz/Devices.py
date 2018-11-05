@@ -45,7 +45,7 @@ class Devices(Logger):
         # Checks if any controllers were found
         if len(_controllers) == 0:
             self.log.error("No supported controller found.")
-            exit(0)
+            return None
 
         # Handle the case where multiple controllers were found
         elif len(_controllers) > 1:
