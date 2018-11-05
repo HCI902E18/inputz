@@ -11,7 +11,7 @@ class Bumper(Input):
     """
 
     def __init__(self, event, **kwargs):
-        super().__init__()
+        super().__init__(kwargs.get('parse_func', None))
 
         # Bumper might wobble, so this value is to filter those
         self.__offset = kwargs.get('offset', 0) / 100
@@ -68,4 +68,6 @@ class Bumper(Input):
         """
         if self.__state == self._last_report and self.__state == 0:
             return None
-        return self._set_last_report(self.__state)
+        if self.parse_func_ is None:
+            return self._set_last_report(self.__state)
+        return self.parse_func_(self._set_last_report(self.__state))

@@ -12,11 +12,16 @@ class Input(Logger):
     Base class for all input types
     """
 
-    def __init__(self):
+    def __init__(self, parse_func=None):
         super().__init__()
 
         # The value from last time the input was read
         self._last_report = None
+
+        if callable(parse_func):
+            self.parse_func_ = parse_func
+        else:
+            self.parse_func_ = None
 
     def validate(self, event: InputEvent) -> Exception:
         """

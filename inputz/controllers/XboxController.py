@@ -58,7 +58,7 @@ class XboxController(Controller):
 
         self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y', interval=[-1, 1])
 
-        self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y')
+        self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y', parse_func=self.value_parser)
         self.LEFT_STICK_BUTTON = Button('BTN_THUMBL')
         self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY')
         self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')

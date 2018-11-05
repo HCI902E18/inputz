@@ -11,7 +11,7 @@ class Joystick(Input):
     """
 
     def __init__(self, direction_x, direction_y, **kwargs):
-        super().__init__()
+        super().__init__(kwargs.get('parse_func', None))
 
         # Bumper might wobble, so this value is to filter those
         self.offset_ = kwargs.get('offset', 15) / 100
@@ -121,4 +121,6 @@ class Joystick(Input):
         """
         if self.vector == self._last_report == self.default_vector:
             return None
-        return self._set_last_report(self.vector)
+        if self.parse_func_ is None:
+            return self._set_last_report(self.vector)
+        return self.parse_func_(self._set_last_report(self.vector))

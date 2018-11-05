@@ -8,8 +8,8 @@ class Button(Input):
     Class mapping to X-Box Buttons
     """
 
-    def __init__(self, event):
-        super().__init__()
+    def __init__(self, event, **kwargs):
+        super().__init__(kwargs.get('parse_func', None))
 
         # This is the event the button will listen for
         self.__event = event
@@ -51,4 +51,6 @@ class Button(Input):
         """
         if self.__state == self._last_report and not self.__state:
             return None
-        return self._set_last_report(self.__state)
+        if self.parse_func_ is None:
+            return self._set_last_report(self.__state)
+        return self.parse_func_(self._set_last_report(self.__state))

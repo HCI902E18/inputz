@@ -163,10 +163,7 @@ class Controller(Logger):
                         # Checks if invocations is listening for current key
                         if invocation.is_(key):
                             # Transmit value to invocation
-                            invocation.transmit(self.value_parser(input_value))
-
-    def value_parser(self, value):
-        return value
+                            invocation.transmit(input_value)
 
     def method_listener(self, func: "function", keys) -> None:
         """
