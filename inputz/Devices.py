@@ -1,7 +1,7 @@
 from inputs import devices
 
 from .Controller import Controller
-from .controllers import XboxController
+from .controllers import XboxController, XboxEliteController
 from .logging import Logger
 
 
@@ -17,6 +17,9 @@ class Devices(Logger):
         self.controllers = [
             # Xbox controller
             XboxController,
+
+            # Xbox mater race
+            XboxEliteController,
         ]
 
     def get_device(self):
