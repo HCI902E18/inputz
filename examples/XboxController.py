@@ -37,13 +37,11 @@ def left_bumper(value):
 
 @device.listen('RIGHT_STICK')
 def right_stick(value):
-    # device.vibrate(value)
     print(f"right_stick: {value}")
 
 
 @device.listen('LEFT_STICK')
 def left_stick(value):
-    # device.vibrate(value)
     print(f"left_stick: {value}")
 
 

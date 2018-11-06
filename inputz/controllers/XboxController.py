@@ -58,9 +58,9 @@ class XboxController(Controller):
 
         self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y', interval=[-1, 1])
 
-        self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y', parse_func=self.value_parser)
+        self.LEFT_STICK = Joystick('ABS_X', 'ABS_Y', parse_func=self.joystick_linux_converter)
         self.LEFT_STICK_BUTTON = Button('BTN_THUMBL')
-        self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY')
+        self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY', parse_func=self.joystick_linux_converter)
         self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')
 
         self.RIGHT_BUMPER = Bumper('ABS_RZ')
@@ -76,11 +76,11 @@ class XboxController(Controller):
         left = 0
         right = 1
 
-    def value_parser(self, value):
-        if isinstance(value, list):
-            if self.os == self.OS.linux:
-                value[1] = -value[1]
-        return value
+    def joystick_linux_converter(self, value):
+        value_ = deepcopy(value)
+        if self.os == self.OS.linux:
+            value_[1] = -value_[1]
+        return value_
 
     def reverse_binding(self, **kwargs):
         if self.os == self.OS.win:

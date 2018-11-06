@@ -50,6 +50,8 @@ class Controller(Logger):
         # does not handle controller disconnection
         self.__unsecure = False
 
+        self.os = self.get_os()
+
     class OS(enum.Enum):
         win = 'win'
         linux = 'linux'
@@ -281,8 +283,7 @@ class Controller(Logger):
         """
         self.__unsecure = True
 
-    @property
-    def os(self):
+    def get_os(self):
         if platform.system() == 'Windows':
             return self.OS.win
         elif platform.system() == 'Linux':
