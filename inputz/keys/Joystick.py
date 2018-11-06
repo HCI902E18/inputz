@@ -122,5 +122,9 @@ class Joystick(Input):
         if self.vector == self._last_report == self.default_vector:
             return None
         if self.parse_func_ is None:
-            return self._set_last_report(self.vector)
-        return self.parse_func_(self._set_last_report(self.vector))
+            return self._set_last_report(self.vector_value)
+        return self.parse_func_(self._set_last_report(self.vector_value))
+
+    @property
+    def vector_value(self):
+        return deepcopy(self.vector)

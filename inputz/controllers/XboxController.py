@@ -77,10 +77,9 @@ class XboxController(Controller):
         right = 1
 
     def joystick_linux_converter(self, value):
-        value_ = deepcopy(value)
         if self.os == self.OS.linux:
-            value_[1] = -value_[1]
-        return value_
+            value[1] = -value[1]
+        return value
 
     def reverse_binding(self, **kwargs):
         if self.os == self.OS.win:
