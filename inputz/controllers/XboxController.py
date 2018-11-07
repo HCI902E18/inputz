@@ -63,8 +63,8 @@ class XboxController(Controller):
         self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY', parse_func=self.joystick_linux_converter)
         self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')
 
-        self.RIGHT_BUMPER = Bumper('ABS_RZ')
-        self.LEFT_BUMPER = Bumper('ABS_Z')
+        self.RIGHT_BUMPER = Bumper('ABS_RZ', interval=self.os_interval())
+        self.LEFT_BUMPER = Bumper('ABS_Z', interval=self.os_interval())
 
         # This controller needs a thread which listens for controller inputs
         self.add_thread(KillableThread(name="ControllerThread", target=self.__event_listener, args=()))
@@ -75,6 +75,11 @@ class XboxController(Controller):
     class Side(enum.Enum):
         left = 0
         right = 1
+
+    def os_interval(self):
+        if self.os == self.OS.linux:
+            return [0, 1023]
+        return [0, 255]
 
     def joystick_linux_converter(self, value):
         if self.os == self.OS.linux:
