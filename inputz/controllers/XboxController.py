@@ -101,7 +101,7 @@ class XboxController(Controller):
         """
         try:
             return self.device.read()
-        except UnpluggedError:
+        except (UnpluggedError, OSError):
             # In case of disconnection, ABORT EVERYTHING
             self.abort()
 
