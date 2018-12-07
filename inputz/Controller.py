@@ -6,6 +6,8 @@ from time import sleep
 
 import keyboard as keybard
 
+from inputz.handlers.Contentious import Contentious
+from inputz.handlers.Single import Single
 from .Input import Input
 from .KillableThread import KillableThread
 from .invokations import Invokation
@@ -55,6 +57,10 @@ class Controller(Logger):
     class OS(enum.Enum):
         win = 'win'
         linux = 'linux'
+
+    class Handler(enum.Enum):
+        contentious = Contentious
+        single = Single
 
     def __reporter(self) -> None:
         """
@@ -167,34 +173,37 @@ class Controller(Logger):
                             # Transmit value to invocation
                             invocation.transmit(input_value)
 
-    def method_listener(self, func: "function", keys) -> None:
+    def method_listener(self, func: "function", keys: list, handler: Handler = Handler.contentious) -> None:
         """
         Method for binding methods from other class instances
 
         :param func: The function to be called
         :param keys: Key as string or list
+        :param handler: The way that the method wants information
         :return: None
         """
+
         if isinstance(keys, list):
             for key in keys:
-                self.__bind(func, key)
+                self.__bind(func, key, handler)
         else:
-            self.__bind(func, keys)
+            self.__bind(func, keys, handler)
 
-    def listen(self, *keys) -> "function":
+    def listen(self, *keys, handler: Handler = Handler.contentious) -> "function":
         """
         Decorator for functions
 
         :param keys: Which keys should trigger the function
+        :param handler: The way that the method wants information
         :return: Decorated function
         """
 
         def decorator(func):
-            return self.__internal_listen(func, keys)
+            return self.__internal_listen(func, keys, handler)
 
         return decorator
 
-    def __internal_listen(self, func: "function", keys) -> "function":
+    def __internal_listen(self, func: "function", keys: tuple, handler: Handler) -> "function":
         """
         Allows controller, to make function calls via reporter
 
@@ -205,13 +214,13 @@ class Controller(Logger):
 
         if isinstance(keys, tuple):
             for key in keys:
-                self.__bind(func, key)
+                self.__bind(func, key, handler)
         else:
-            self.__bind(func, keys)
+            self.__bind(func, keys, handler)
 
         return func
 
-    def __bind(self, func: "function", key: str) -> None:
+    def __bind(self, func: "function", key: str, handler: Handler) -> None:
         """
         Binds the key to the function
 
@@ -219,7 +228,8 @@ class Controller(Logger):
         :param key: Key as string
         :return: None
         """
-        self.__invocations.append(Invokation(func, key))
+        handler_instance = handler.value()
+        self.__invocations.append(Invokation(func, key, handler_instance))
 
     def clear_invocations(self) -> None:
         """

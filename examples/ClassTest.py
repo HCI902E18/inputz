@@ -5,7 +5,7 @@ d = Devices()
 device = d.get_device()
 
 
-@device.listen('A')
+@device.listen('A', handler=device.Handler.single)
 def test_func(args):
     print('test_func', args)
     return
@@ -19,7 +19,7 @@ def abort():
 
 class TestClass(object):
     def __init__(self):
-        device.method_listener(self.test_method, 'A')
+        device.method_listener(self.test_method, 'A', device.Handler.single)
 
         device.abort_method(self.abort)
 

@@ -1,3 +1,4 @@
+from inputz.handlers.Handler import Handler
 from inputz.logging import Logger
 
 
@@ -6,11 +7,12 @@ class Invokation(Logger):
     Class used for triggering functions through bindings
     """
 
-    def __init__(self, func: "function", key: str):
+    def __init__(self, func: "function", key: str, handler: Handler):
         super().__init__()
 
         self.func = func
         self.key = key
+        self.handler = handler
 
     def is_(self, key: str) -> bool:
         """
@@ -30,6 +32,7 @@ class Invokation(Logger):
         :return: None
         """
         if callable(self.func):
-            self.func(value)
+            if self.handler.should_emit(value):
+                self.func(value)
         else:
             raise Exception('Function is not callable')
