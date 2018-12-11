@@ -47,8 +47,8 @@ class XboxController(Controller):
         # Maps all the buttons on the controller
         self.A = Button('BTN_SOUTH')
         self.B = Button('BTN_EAST')
-        self.X = Button('BTN_WEST')
-        self.Y = Button('BTN_NORTH')
+        self.X = Button(self.reverse_binding(win='BTN_WEST', linux='BTN_NORTH'))
+        self.Y = Button(self.reverse_binding(win='BTN_NORTH', linux='BTN_WEST'))
 
         self.START = Button(self.reverse_binding(win='BTN_SELECT', linux='BTN_START'))
         self.SELECT = Button(self.reverse_binding(win='BTN_START', linux='BTN_SELECT'))
