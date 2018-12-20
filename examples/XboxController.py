@@ -25,14 +25,14 @@ def push_b(value):
     print(f"push_b: {value}")
 
 
-@device.listen('RIGHT_BUMPER')
-def right_bumper(value):
-    print(f"right_bumpervalue: {value}")
+@device.listen('RIGHT_TRIGGER')
+def right_trigger(value):
+    print(f"right_trigger value: {value}")
 
 
-@device.listen('LEFT_BUMPER')
-def left_bumper(value):
-    print(f"left_bumpervalue: {value}")
+@device.listen('LEFT_TRIGGER')
+def left_trigger(value):
+    print(f"left_trigger value: {value}")
 
 
 @device.listen('RIGHT_STICK')

@@ -7,7 +7,7 @@ from inputz.Controller import Controller
 from inputz.Input import Input
 from inputz.KillableThread import KillableThread
 from inputz.OS import OS
-from inputz.keys import Bumper
+from inputz.keys import Trigger
 from inputz.keys.Button import Button
 from inputz.keys.Joystick import Joystick
 
@@ -53,8 +53,8 @@ class XboxController(Controller):
         self.START = Button(self.reverse_binding(win='BTN_SELECT', linux='BTN_START'))
         self.SELECT = Button(self.reverse_binding(win='BTN_START', linux='BTN_SELECT'))
 
-        self.RIGHT_TRIGGER = Button('BTN_TR')
-        self.LEFT_TRIGGER = Button('BTN_TL')
+        self.RIGHT_BUMPER = Button('BTN_TR')
+        self.LEFT_BUMPER = Button('BTN_TL')
 
         self.ARROWS = Joystick('ABS_HAT0X', 'ABS_HAT0Y', interval=[-1, 1])
 
@@ -63,8 +63,8 @@ class XboxController(Controller):
         self.RIGHT_STICK = Joystick('ABS_RX', 'ABS_RY', parse_func=self.joystick_linux_converter)
         self.RIGHT_STICK_BUTTON = Button('BTN_THUMBR')
 
-        self.RIGHT_BUMPER = Bumper('ABS_RZ', interval=self.os_interval())
-        self.LEFT_BUMPER = Bumper('ABS_Z', interval=self.os_interval())
+        self.RIGHT_TRIGGER = Trigger('ABS_RZ', interval=self.os_interval())
+        self.LEFT_TRIGGER = Trigger('ABS_Z', interval=self.os_interval())
 
         # This controller needs a thread which listens for controller inputs
         self.add_thread(KillableThread(name="ControllerThread", target=self.__event_listener, args=()))
